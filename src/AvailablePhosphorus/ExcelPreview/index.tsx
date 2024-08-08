@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { IApData } from "../DataInput";
 import Decimal from "decimal.js";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import type { TableProps } from "antd";
+import * as XLSX from "xlsx";
 
 /**
  * @field {number} A0 默认为0
@@ -74,6 +75,43 @@ const ExcelPreview = ({ data }: IProps) => {
     }
 
     setExcelData(newExcelData);
+  };
+
+  const exportToExcel = () => {
+    // 创建一个工作簿
+    const workbook = XLSX.utils.book_new();
+
+    // 将数据转换为工作表
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // 定义列头修改映射
+    const headerMapping: { [key: string]: string } = {
+      code: "编码",
+      content: "含量mg/kg",
+      contentRounded: "含量mg/kg",
+    };
+
+    // 获取列头行的范围
+    const range = XLSX.utils.decode_range(worksheet["!ref"]!);
+    const firstRow = range.s.r;
+
+    // 遍历列头并进行修改
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const address = XLSX.utils.encode_col(C) + (firstRow + 1);
+      if (worksheet[address] && headerMapping[worksheet[address].v]) {
+        worksheet[address].v = headerMapping[worksheet[address].v];
+      }
+    }
+
+    // 设置列宽
+    const colWidths = new Array(range.e.c + 1).fill({ wch: 12 }); // 设置每列宽度为20字符宽度
+    worksheet["!cols"] = colWidths;
+
+    // 将工作表添加到工作簿
+    XLSX.utils.book_append_sheet(workbook, worksheet, "有效磷");
+
+    // 生成 Excel 文件并触发下载
+    XLSX.writeFile(workbook, "化验结果.xlsx");
   };
 
   const columns: TableProps<IApData>["columns"] = [
@@ -157,6 +195,15 @@ const ExcelPreview = ({ data }: IProps) => {
         dataSource={excelData}
         pagination={{ position: [] }}
       />
+      <div>
+        <Button
+          onClick={exportToExcel}
+          type="primary"
+          style={{ width: "100%" }}
+        >
+          导出Excel
+        </Button>
+      </div>
     </div>
   );
 };

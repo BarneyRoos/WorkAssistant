@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  base: "/WorkAssistant/",
   css: {
     modules: {
       localsConvention: "camelCase", // 可以选择 'camelCase' 或 'dashesOnly'
