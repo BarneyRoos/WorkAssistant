@@ -79,7 +79,7 @@ const DataInput = ({ visible, onDataChange }: IProps) => {
       dataIndex: "code",
       align: "center",
       width: 500,
-      render: (text) => <Input value={text} addonAfter={text.split("-")[1]} />,
+      render: (text) => <Input value={text} />,
     },
     {
       title: "A",
@@ -88,7 +88,6 @@ const DataInput = ({ visible, onDataChange }: IProps) => {
       render: (text, record) => (
         <InputNumber
           value={text}
-          style={{ width: 200 }}
           defaultValue={0}
           min={0}
           max={1}
@@ -115,7 +114,7 @@ const DataInput = ({ visible, onDataChange }: IProps) => {
     {
       title: (
         <>
-          H<sub>2</sub>O
+          H<sub>2</sub> O(%)
         </>
       ),
       dataIndex: "H2O",
@@ -123,7 +122,6 @@ const DataInput = ({ visible, onDataChange }: IProps) => {
       render: (text, record) => (
         <InputNumber
           value={text}
-          addonAfter="%"
           defaultValue={0}
           min={0}
           max={100}
@@ -150,6 +148,7 @@ const DataInput = ({ visible, onDataChange }: IProps) => {
         columns={columns}
         dataSource={data}
         pagination={{ position: [] }}
+        scroll={{ y: 400 }}
       />
 
       <div className={classNames.actionBox}>

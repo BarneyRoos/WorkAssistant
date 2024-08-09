@@ -2,12 +2,16 @@ import { Steps } from "antd";
 import { useState } from "react";
 import classNames from "./index.module.less";
 import DataInput, { IApData } from "./DataInput";
-import ExcelPreview from "./ExcelPreview";
+import ExcelPreview, { IExcelData } from "./ExcelPreview";
+import WordPreview from "./WordPreview";
 
-interface IProps {}
-const AvailablePhosphorus = ({}: IProps) => {
+interface IProps {
+  sampleName: string;
+}
+const AvailablePhosphorus = ({ sampleName }: IProps) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [data, setData] = useState<IApData[]>([]);
+  const [fillData, setFillData] = useState<IApData[]>([]);
+  const [excelData, setExcelData] = useState<IExcelData[]>([]);
 
   const onClickStep = (current: number) => {
     setCurrentStep(current);
@@ -34,9 +38,15 @@ const AvailablePhosphorus = ({}: IProps) => {
         />
       </div>
 
-      <DataInput visible={currentStep === 0} onDataChange={setData} />
+      <DataInput visible={currentStep === 0} onDataChange={setFillData} />
 
-      {currentStep === 1 && <ExcelPreview data={data} />}
+      {currentStep === 1 && (
+        <ExcelPreview fillData={fillData} onConfirm={setExcelData} />
+      )}
+
+      {currentStep === 2 && (
+        <WordPreview sampleName={sampleName} excelData={excelData} />
+      )}
     </>
   );
 };

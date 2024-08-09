@@ -4,6 +4,8 @@ import Decimal from "decimal.js";
 import { Button, Table } from "antd";
 import type { TableProps } from "antd";
 import * as XLSX from "xlsx";
+import classNames from "../index.module.less";
+import { DownloadOutlined } from "@ant-design/icons";
 
 /**
  * @field {number} A0 默认为0
@@ -16,7 +18,7 @@ import * as XLSX from "xlsx";
  * @field {number} content 公式：(rho - rho0) * V * D / m / (1 - H2O * 0.01)
  * @field {number} contentRounded 结果保留小数点后2位,不超过3位有效数字
  */
-interface IExcelData extends IApData {
+export interface IExcelData extends IApData {
   A0: number;
   a: number;
   b: number;
@@ -29,14 +31,19 @@ interface IExcelData extends IApData {
 }
 
 interface IProps {
-  data: IApData[];
+  fillData: IApData[];
+  onConfirm: (data: IExcelData[]) => void;
 }
-const ExcelPreview = ({ data }: IProps) => {
+const ExcelPreview = ({ fillData, onConfirm }: IProps) => {
   const [excelData, setExcelData] = useState<IExcelData[]>([]);
 
   useEffect(() => {
-    createExcelData(data);
-  }, [data]);
+    createExcelData(fillData);
+  }, [fillData]);
+
+  useEffect(() => {
+    onConfirm(excelData);
+  }, [JSON.stringify(excelData)]);
 
   const createExcelData = (fillData: IApData[]) => {
     const newExcelData = [];
@@ -195,11 +202,12 @@ const ExcelPreview = ({ data }: IProps) => {
         dataSource={excelData}
         pagination={{ position: [] }}
       />
-      <div>
+      <div className={classNames.actionBox}>
         <Button
           onClick={exportToExcel}
           type="primary"
-          style={{ width: "100%" }}
+          style={{ width: "99%" }}
+          icon={<DownloadOutlined />}
         >
           导出Excel
         </Button>
